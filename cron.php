@@ -7,6 +7,14 @@ ini_set('error_reporting',E_ALL);
 // simple database.
 $data = @json_decode(file_get_contents('data.json'),true);
 if(!is_array($data))$data=array();
+
+// failsafe in place incase something goes wrong.
+if(isset($_REQUEST['stop'])){
+	$data['lock'] = time()+time();
+	file_put_contents('data.json',json_encode($data));
+	echo 'stopped';
+	exit;
+}
 if(isset($data['lock']) && $data['lock'] > (time() - 3600) && !isset($_REQUEST['skip_lock'])){
 	// script already processing, exit to let that one finish.
 	exit;
